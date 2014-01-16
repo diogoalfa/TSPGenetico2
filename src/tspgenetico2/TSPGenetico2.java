@@ -39,16 +39,22 @@ public class TSPGenetico2 {
         List<Solucion> hijas=new ArrayList();
         Solucion hija1;
         Solucion hija2;
-        int cantidad=20;
+        int cantidad=200;
         int largoSolucion=p.length();
-       // llenarPoblacionEstocastico(lista, poblacion, p, rnd, cantidad);
+        //llenarPoblacionEstocastico(lista, poblacion, p, rnd, cantidad);
         llenarConGradienteAscedente(lista, poblacion, p, rnd, cantidad);
         //imprimirPoblacion(lista, poblacion);
-        System.out.println("MEJOR SOLUCION POBLACION : "+mejorDeLaPoblacion(lista, poblacion));
+        System.out.println("DESORDENADOS");
+        //imprimirPoblacion(lista, poblacion);
+       // System.out.println("MEJOR SOLUCION POBLACION : "+mejorDeLaPoblacion(lista, poblacion));
         List<Solucion> nuevaPoblacion=new ArrayList();
-        ordenarAscedentePoblacion(lista, poblacion);
+        //ordenarAscedentePoblacion(lista, poblacion);
+        quicksort(poblacion, 0, cantidad-1);
+        System.out.println("Ordenador QuickSORT");
+        //imprimirPoblacion(lista, poblacion);
         System.out.println("Primero poblacion :"+poblacion.get(0));
-        for (int i = 0; i < 300; i++) {
+        
+        for (int i = 0; i < 200; i++) {
             if (nuevaPoblacion.isEmpty()==true) {
                 for (int j = 0; j < 50; j++) {
                     Solucion hab1 = poblacion.get(rnd.nextInt(cantidad/2));
@@ -84,10 +90,11 @@ public class TSPGenetico2 {
                 }
             }
             else {
-                ordenarAscedentePoblacion(lista, nuevaPoblacion);
+                //ordenarAscedentePoblacion(lista, nuevaPoblacion);
+                quicksort(nuevaPoblacion, 0, nuevaPoblacion.size()-1);
                 for (int j = 0; j < 50; j++) {
                      Solucion hab1 = nuevaPoblacion.get(rnd.nextInt(cantidad/2));
-                    Solucion hab2 = nuevaPoblacion.get(rnd.nextInt(cantidad/2));
+                     Solucion hab2 = nuevaPoblacion.get(rnd.nextInt(cantidad/2));
                     
                     // System.out.println(" Habitante 1 :" + hab1);
                     // System.out.println(" Habitante 2 :" + hab2);
@@ -119,12 +126,42 @@ public class TSPGenetico2 {
             }
             
         }
-        Solucion mejorPoblacion=mejorDeLaPoblacion(lista,nuevaPoblacion);
-        System.out.println("Mejor Nueva Poblacion :"+mejorPoblacion);
+        
+       Solucion mejorPoblacion=mejorDeLaPoblacion(lista,nuevaPoblacion);
+       System.out.println("Mejor Nueva Poblacion :"+mejorPoblacion);
         
         
         
         
+    }
+    
+    public static void quicksort(List<Solucion> poblacion,int izq,int der){
+        Solucion pivote = poblacion.get(izq); // tomamos primer elemento como pivote
+        int i = izq; // i realiza la búsqueda de izquierda a derecha
+        int j = der; // j realiza la búsqueda de derecha a izquierda
+        Solucion aux;
+ 
+        while (i < j) {            // mientras no se crucen las búsquedas
+            while (poblacion.get(i).getCostoTour() <= pivote.getCostoTour() && i < j) {
+                i++; // busca elemento mayor que pivote
+            }
+            while (poblacion.get(j).getCostoTour()> pivote.getCostoTour()) {
+                j--;         // busca elemento menor que pivote
+            }
+            if (i < j) {                      // si no se han cruzado                      
+                aux =poblacion.get(i);                  // los intercambia
+                poblacion.set(i, poblacion.get(j));
+                poblacion.set(j, aux);
+            }
+        }
+        poblacion.set(izq,poblacion.get(j)); // se coloca el pivote en su lugar de forma que tendremos
+        poblacion.set(j,pivote); // los menores a su izquierda y los mayores a su derecha
+        if (izq < j - 1) {
+            quicksort(poblacion, izq, j - 1); // ordenamos subarray izquierdo
+        }
+        if (j + 1 < der) {
+            quicksort(poblacion, j + 1, der); // ordenamos subarray derecho
+        }
     }
     
     public static void ordenarAscedentePoblacion(Map<String, Ciudad> lista, List<Solucion> poblacion) {
@@ -156,7 +193,7 @@ public class TSPGenetico2 {
 
         int contador = 0;
         // Ciclo de Cnd de termino
-        for (int j = 0; j < 50; j++) {
+        for (int j = 0; j < cantidad; j++) {
 
             solVecina =getVecina(lista, solMejor.getTour(), rnd);
             for (int i = 0; i < cantidad; i++) {
@@ -175,11 +212,11 @@ public class TSPGenetico2 {
                         break;
                     }
                 }
-                poblacion.add(solMejor);
+                
                 //System.out.println("Mejor Solucion Gradiente :"+mejorFitnes+" | indice :"+i); 
                 contador = 0;
             }
-
+        poblacion.add(solMejor);
 
         }
         System.out.println("MEJOR GRADIENTE ASC : "+solMejor);
